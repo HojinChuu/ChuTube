@@ -6,18 +6,14 @@ require_once 'includes/classes/VideoDetailsFormProvider.php';
 <div class="column">
 
     <?php
-
     $formProvider = new VideoDetailsFormProvider($con);
     echo $formProvider->createUploadForm();
-
     ?>
 
 </div>
 
 <script>
-$("form").submit(() => {
-    $("#loadingModal").modal("show");
-})
+$("form").submit(() => $("#loadingModal").modal("show"));
 </script>
 
 <div class="modal fade" id="loadingModal" tabindex="-1" aria-labelledby="loadingModal" aria-hidden="true" data-backdrop="static" data-keyboard="false">
