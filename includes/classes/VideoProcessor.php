@@ -28,7 +28,18 @@ class VideoProcessor
         }
 
         if (move_uploaded_file($videoData["tmp_name"], $tempFilePath)) {
-            echo "File moved successfully";
+            // echo "File moved successfully";
+            $finalFilePath = $targetDir . uniqid() . ".mp4";
+
+            if (!$this->insertVideoData($videoUploadData, $finalFilePath)) {
+                echo "Insert query failed";
+                return false;
+            }
+
+            if (!$this->convertVideoToMp4($tempFilePath, $finalFilePath)) {
+                echo "Upload failed";
+                return false;
+            }
         }
     }
 
@@ -66,5 +77,36 @@ class VideoProcessor
     private function hasError($data)
     {
         return $data["error"] != 0;
+    }
+
+    private function insertVideoData($uploadData, $filePath)
+    {
+        $sql = "INSERT INTO videos (title, uploadedBy, description, privacy, category, filePath) 
+                VALUES (:title, :uploadedBy, :description, :privacy, :category, :filePath)";
+        $query = $this->con->prepare($sql);
+        $query->bindParam(":title", $uploadData->title);
+        $query->bindParam(":uploadedBy", $uploadData->uploadedBy);
+        $query->bindParam(":description", $uploadData->description);
+        $query->bindParam(":privacy", $uploadData->privacy);
+        $query->bindParam(":category", $uploadData->category);
+        $query->bindParam(":filePath", $filePath);
+
+        return $query->execute();
+    }
+
+    public function convertVideoToMp4($tempFilePath, $finalFilePath)
+    {
+        $cmd = "ffmpeg/ffmpeg -i $tempFilePath $finalFilePath";
+
+        $outputLog = array();
+        exec($cmd, $outputLog, $returnCode);
+
+        if ($returnCode != 0) {
+            foreach ($outputLog as $line) {
+                echo $line . "<br>";
+            }
+            return false;
+        }
+        return true;
     }
 }
