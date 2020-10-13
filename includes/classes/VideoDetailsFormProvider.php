@@ -2,18 +2,29 @@
 
 class VideoDetailsFormProvider {
 
+    private $con;
+
+    public function __construct($con)
+    {
+        $this->con = $con;
+    }
+
     public function createUploadForm()
     {
         $fileInput = $this->createFileInput();
         $titleInput = $this->createTitleInput();
         $descriptionInput = $this->createDescriptionInput();
         $privacyInput = $this->createPrivacyInput();
+        $categoriesInput = $this->createCategoriesInput();
+        $uploadButton = $this->createUploadButton();
 
-        return "<form action='processing.php' method='POST'>
+        return "<form action='processing.php' method='POST' enctype='multipart/form-data'>
                     $fileInput
                     $titleInput
                     $descriptionInput
                     $privacyInput
+                    $categoriesInput
+                    $uploadButton
                 </form>";
     }
   
@@ -35,7 +46,7 @@ class VideoDetailsFormProvider {
     private function createDescriptionInput() 
     {
         return "<div class='form-group'>
-                    <textarea class='form-control' placeholder='Description' name='descriptioninput' rows='3'></textarea>
+                    <textarea class='form-control' placeholder='Description' name='descriptionInput' rows='3'></textarea>
                 </div>";
     }
 
@@ -47,5 +58,26 @@ class VideoDetailsFormProvider {
                         <option value='1'>Public</option>
                     </select>
                 </div>";
+    }
+
+    private function createCategoriesInput() 
+    {
+        $query = $this->con->prepare("SELECT * FROM categories");
+        $query->execute();
+
+        $html = "<div class='form-group'>
+                    <select class='form-control' name='categoryInput'>";
+
+        while($row = $query->fetch(PDO::FETCH_ASSOC)) {
+            $html .= "<option value='{$row['id']}'> {$row['name']} </option>";
+        }
+
+        $html .= "</select></div>";
+        return $html;
+    }
+
+    private function createUploadButton() 
+    {
+        return "<button type='submit' class='btn btn-primary' name='uploadButton'>Upload</button>";
     }
 }
