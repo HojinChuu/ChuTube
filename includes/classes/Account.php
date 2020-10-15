@@ -9,6 +9,26 @@ class Account
         $this->con = $con;
     }
 
+    public function login($username, $password) 
+    {
+        $password = hash("sha512", $password);
+
+        $sql = "SELECT * FROM users 
+                WHERE username = :username 
+                AND password = :password";
+        $query = $this->con->prepare($sql);
+        $query->bindParam(":username", $username);
+        $query->bindParam(":password", $password);
+        $query->execute();
+
+        if ($query->rowCount() == 1) {
+            return true;
+        } else {
+            array_push($this->errorArray, Constants::$loginFailed);
+            return false;
+        }
+    }
+
     public function register($firstName, $lastName, $username, $email, $confirm_email, $password, $confirm_password) 
     {
         $this->validateFirstName($firstName);
@@ -16,6 +36,30 @@ class Account
         $this->validateUsername($username);
         $this->validateEmails($email, $confirm_email);
         $this->validatePasswords($password, $confirm_password);
+
+        if (empty($this->errorArray)) {
+            return $this->insertUserDetails($firstName, $lastName, $username, $email, $password);
+        } else {
+            return false;
+        }
+    }
+
+    private function insertUserDetails($firstName, $lastName, $username, $email, $password)
+    {
+        $password = hash("sha512", $password);
+        $profilePic = "assets/img/profilePictures/default.png";
+
+        $sql = "INSERT INTO users (firstName, lastName, username, email, password, profilePic) 
+                VALUES (:firstName, :lastName, :username, :email, :password, :profilePic)";
+        $query = $this->con->prepare($sql);
+        $query->bindParam(":firstName", $firstName);
+        $query->bindParam(":lastName", $lastName);
+        $query->bindParam(":username", $username);
+        $query->bindParam(":email", $email);
+        $query->bindParam(":password", $password);
+        $query->bindParam(":profilePic", $profilePic);
+
+        return $query->execute();
     }
 
     private function validateFirstName($firstName) 

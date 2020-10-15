@@ -2,6 +2,7 @@
 
 class Constants 
 {
+    // register err
     public static $firstNameCharacters = "Your first name must be between 2 and 25 characters";
     public static $lastNameCharacters = "Your last name must be between 2 and 25 characters";
     public static $usernameCharacters = "Your username must be between 5 and 25 characters";
@@ -12,4 +13,7 @@ class Constants
     public static $passwordsDoNotMatch = "Your passwords do not match";
     public static $passwordNotAlphanumeric = "Your password can only contain letters and numbers";
     public static $passwordLength = "Your password must be between 5 and 30 characters";
+    
+    // login err
+    public static $loginFailed = "Your username or password was incorrect";
 }

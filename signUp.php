@@ -19,7 +19,19 @@ if (isset($_POST["submitButton"])) {
     $password = FormSanitizer::sanitizeFormPassword($_POST["password"]);
     $confirm_password = FormSanitizer::sanitizeFormPassword($_POST["confirm_password"]);
     
-    $account->register($firstName, $lastName, $username, $email, $confirm_email, $password, $confirm_password);
+    $wasSuccessful = $account->register($firstName, $lastName, $username, $email, $confirm_email, $password, $confirm_password);
+
+    if ($wasSuccessful) {
+        $_SESSION["userLoggedIn"] = $username;
+        header("Location: index.php");
+    }
+}
+
+function getInputValue($name) 
+{
+    if (isset($_POST[$name])) {
+        return $_POST[$name];
+    }
 }
 
 ?>
@@ -44,18 +56,18 @@ if (isset($_POST["submitButton"])) {
             </div>
             <div class="loginForm">
                 <form action="signUp.php" method="POST">
-                    <input type="text" name="firstName" placeholder="First name" autocomplete="off" required>
+                    <input type="text" name="firstName" placeholder="First name" value="<?= getInputValue('firstName') ?>" autocomplete="off" required>
                     <?= $account->getError(Constants::$firstNameCharacters); ?>
                     
-                    <input type="text" name="lastName" placeholder="Last name" autocomplete="off" required>
+                    <input type="text" name="lastName" placeholder="Last name" value="<?= getInputValue('lastName') ?>" autocomplete="off" required>
                     <?= $account->getError(Constants::$firstNameCharacters); ?>
                     
-                    <input type="text" name="username" placeholder="Username" autocomplete="off" required>
+                    <input type="text" name="username" placeholder="Username" value="<?= getInputValue('username') ?>" autocomplete="off" required>
                     <?= $account->getError(Constants::$usernameCharacters); ?>
                     <?= $account->getError(Constants::$usernameTaken); ?>
                     
-                    <input type="email" name="email" placeholder="Email" autocomplete="off" required>
-                    <input type="email" name="confirm_email" placeholder="Confirm Email" autocomplete="off" required>
+                    <input type="email" name="email" placeholder="Email" value="<?= getInputValue('email') ?>" autocomplete="off" required>
+                    <input type="email" name="confirm_email" placeholder="Confirm Email" value="<?= getInputValue('confirm_email') ?>" autocomplete="off" required>
                     <?= $account->getError(Constants::$emailsDoNotMatch); ?>
                     <?= $account->getError(Constants::$emailInvalid); ?>
                     <?= $account->getError(Constants::$emailTaken); ?>
