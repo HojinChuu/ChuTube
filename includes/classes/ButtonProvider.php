@@ -59,7 +59,7 @@ class ButtonProvider
         $userLoggedIn = $userLoggedInObj->getUsername();
 
         $isSubscribedTo = $userLoggedInObj->isSubscribedTo($userTo);
-        $buttonText = $isSubscribedTo ? "SUBSCRIBED" : "SUBSCRIBED";
+        $buttonText = $isSubscribedTo ? "SUBSCRIBED" : "SUBSCRIBE";
         $buttonText .= " " . $userToObj->getSubscriberCount();
 
         $buttonClass = $isSubscribedTo ? "unsubscribe button" : "subscribe button";
