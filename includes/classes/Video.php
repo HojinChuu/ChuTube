@@ -225,4 +225,15 @@ class Video
 
         return $query->rowCount() > 0;
     }
+
+    public function getNumberOfComments()
+    {
+        $id = $this->getId();
+        $sql = "SELECT * FROM comments WHERE videoId = :videoId";
+        $query = $this->con->prepare($sql);
+        $query->bindParam(":videoId", $id);
+        $query->execute();
+
+        return $query->rowCount();
+    }
 }
