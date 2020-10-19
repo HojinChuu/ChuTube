@@ -20,11 +20,11 @@ if (isset($_POST["commentText"]) && isset($_POST["postedBy"]) && isset($_POST["v
     $query->bindParam(":body", $commentText);
     $query->execute();
 
-    // 유저에서 선택쿼리 실행되기 때문에 먼저 할당
-    $lastInsertId = $con->lastInsertId();
+    $lastInsertId = $con->lastInsertId(); // 유저에서 선택쿼리 실행되기 때문에 먼저 할당
+    $username = $_SESSION["userLoggedIn"];
     
     // return new comment html
-    $userLoggedInObj = new User($con, $_SESSION["userLoggedIn"]);
+    $userLoggedInObj = new User($con, $username);
     $newComment = new Comment($con, $lastInsertId, $userLoggedInObj, $videoId);
     echo $newComment->create();
 

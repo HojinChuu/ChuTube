@@ -3,7 +3,7 @@
 class Account 
 {
     private $con;
-    private $errorArray = array();
+    private $errorArray = [];
     
     public function __construct($con) {
         $this->con = $con;

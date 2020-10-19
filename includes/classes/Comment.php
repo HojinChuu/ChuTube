@@ -172,4 +172,91 @@ class Comment
 
         return $numLikes - $numDislikes;
     }
+
+    public function like()
+    {
+        $id = $this->getId();
+        $username = $this->userLoggedInObj->getUsername();
+
+        if ($this->wasLikedBy()) {
+            // user has already liked
+            $sql = "DELETE FROM likes WHERE username = :username AND commentId = :commentId";
+            $query = $this->con->prepare($sql);
+            $query->bindParam(":username", $username);
+            $query->bindParam(":commentId", $id);
+            $query->execute();
+
+            return -1;
+        } 
+        else {
+            // user has not liked
+            $sql = "DELETE FROM dislikes WHERE username = :username AND commentId = :commentId";
+            $query = $this->con->prepare($sql);
+            $query->bindParam(":username", $username);
+            $query->bindParam(":commentId", $id);
+            $query->execute();
+            $count = $query->rowCount();
+
+            $sql = "INSERT INTO likes (username, commentId) VALUES (:username, :commentId)";
+            $query = $this->con->prepare($sql);
+            $query->bindParam(":username", $username);
+            $query->bindParam(":commentId", $id);
+            $query->execute();
+
+            return 1 + $count;
+        }
+    }
+
+    public function dislike()
+    {
+        $id = $this->getId();
+        $username = $this->userLoggedInObj->getUsername();
+
+        if ($this->wasDislikedBy()) {
+            // user has already liked
+            $sql = "DELETE FROM dislikes WHERE username = :username AND commentId = :commentId";
+            $query = $this->con->prepare($sql);
+            $query->bindParam(":username", $username);
+            $query->bindParam(":commentId", $id);
+            $query->execute();
+
+            return 1;
+        } 
+        else {
+            // user has not liked
+            $sql = "DELETE FROM likes WHERE username = :username AND commentId = :commentId";
+            $query = $this->con->prepare($sql);
+            $query->bindParam(":username", $username);
+            $query->bindParam(":commentId", $id);
+            $query->execute();
+            $count = $query->rowCount();
+
+            $sql = "INSERT INTO dislikes (username, commentId) VALUES (:username, :commentId)";
+            $query = $this->con->prepare($sql);
+            $query->bindParam(":username", $username);
+            $query->bindParam(":commentId", $id);
+            $query->execute();
+
+            return -1 - $count;
+        }
+    }
+
+    public function getReplies() 
+    {
+        $id = $this->getId();
+        $sql = "SELECT * FROM comments WHERE responseTo = :commentId ORDER BY datePosted ASC";
+        $query = $this->con->prepare($sql);
+        $query->bindParam(":commentId", $id);
+        $query->execute();
+
+        $comments = "";
+        $videoId = $this->getVideoId();
+
+        while($row = $query->fetch(PDO::FETCH_ASSOC)) {
+            $comment = new Comment($this->con, $row, $this->userLoggedInObj, $videoId);
+            $comments .= $comment->create();
+        }
+        
+        return $comments;
+    }
 }
