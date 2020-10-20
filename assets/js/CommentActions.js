@@ -16,6 +16,11 @@ function postComment(button, postedBy, videoId, replyTo, containerClass) {
     else {
         alert("You can't post an empty comment");
     }
+
+    // remove
+    const parent = $(button).closest(".itemContainer"); 
+    const commentForm = parent.find(".commentForm").first();
+    commentForm.toggleClass("hidden");
 }
 
 function toggleReply(button) {

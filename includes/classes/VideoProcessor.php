@@ -3,7 +3,7 @@
 class VideoProcessor 
 {
     private $con;
-    private $sizeLimit = 500000000;
+    private $sizeLimit = 1000000000;
     private $allowedTypes = array("mp4", "flv", "webm", "mkv", "vob", "ogv", "ogg", "avi", "wmv", "mov", "mpeg", "mpg");
 
     public function __construct($con)
