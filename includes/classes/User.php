@@ -24,7 +24,7 @@ class User
 
     public function getUsername()
     {
-        return User::isLoggedIn() ? $this->sqlData["username"] : null;
+        return User::isLoggedIn() ? $this->sqlData["username"] : 'null';
     }
 
     public function getName()

@@ -37,6 +37,7 @@ class ButtonProvider
     {
         $userObj = new User($con, $username);
         $profilePic = $userObj->getProfilePic();
+
         $link = "profile.php?username=$username";
 
         return "<a href='$link'>
@@ -70,5 +71,17 @@ class ButtonProvider
         return "<div class='subscribeButtonContainer'>
                     $button
                 </div>";
+    }
+
+    public static function createUserProfileNavigationButton($con, $username) 
+    {
+        if (User::isLoggedIn()) {
+            return ButtonProvider::createUserProfileButton($con, $username);
+        }
+        else {
+            return "<a href='signIn.php'>
+                        <span class='signInLink'>SIGN IN</span>
+                    </a>";
+        }
     }
 }

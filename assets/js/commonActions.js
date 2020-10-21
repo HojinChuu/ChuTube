@@ -3,8 +3,8 @@ $(document).ready(() => {
         var main = $("#mainSectionContainer");
         var nav = $("#sideNavContainer");
 
-        main.hasClass("leftPadding") ? nav.hide() : nav.show();
         main.toggleClass("leftPadding")
+        main.hasClass("leftPadding") ? nav.show() : nav.hide();
     })
 });
 
