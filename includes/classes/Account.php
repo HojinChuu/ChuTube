@@ -44,6 +44,65 @@ class Account
         }
     }
 
+    public function updateDetails($firstName, $lastName, $email, $username)
+    {
+        $this->validateFirstName($firstName);
+        $this->validateLastName($lastName);
+        $this->validateNewEmails($email, $username);
+
+        if (empty($this->errorArray)) {
+            // update details
+            $sql = "UPDATE users SET firstName=:firstName, lastName=:lastName, email=:email WHERE username=:username";
+            $query = $this->con->prepare($sql);
+            $query->bindParam(":firstName", $firstName);
+            $query->bindParam(":lastName", $lastName);
+            $query->bindParam(":email", $email);
+            $query->bindParam(":username", $username);
+
+            return $query->execute();
+        }
+        else {
+            return false;
+        }
+    } 
+
+    public function updatePassword($oldPassword, $newPassword, $newConfirmPassword, $username)
+    {
+        $this->validateOldPassword($oldPassword, $username);
+        $this->validatePasswords($newPassword, $newConfirmPassword);
+
+        if (empty($this->errorArray)) {
+            // update details
+            $password = hash("sha512", $newPassword);
+            $sql = "UPDATE users SET password=:password WHERE username=:username";
+            $query = $this->con->prepare($sql);
+            $query->bindParam(":password", $password);
+            $query->bindParam(":username", $username);
+
+            return $query->execute();
+        }
+        else {
+            return false;
+        }
+    } 
+
+    private function validateOldPassword($oldPassword, $username)
+    {
+        $password = hash("sha512", $oldPassword);
+
+        $sql = "SELECT * FROM users 
+                WHERE username = :username 
+                AND password = :password";
+        $query = $this->con->prepare($sql);
+        $query->bindParam(":username", $username);
+        $query->bindParam(":password", $password);
+        $query->execute();
+
+        if ($query->rowCount() == 0) {
+            array_push($this->errorArray, Constants::$passwordIncorrect);
+        }
+    }
+
     private function insertUserDetails($firstName, $lastName, $username, $email, $password)
     {
         $password = hash("sha512", $password);
@@ -115,6 +174,25 @@ class Account
         }
     }
 
+    private function validateNewEmails($email, $username) 
+    {
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            array_push($this->errorArray, Constants::$emailInvalid);
+            return;
+        }
+
+        $sql = "SELECT email FROM users 
+                WHERE email = :email AND username != :username";
+        $query = $this->con->prepare($sql);
+        $query->bindParam(":email", $email);
+        $query->bindParam(":username", $username);
+        $query->execute();
+
+        if ($query->rowCount() != 0) {
+            array_push($this->errorArray, Constants::$emailTaken);
+        }
+    }
+
     private function validatePasswords($password, $confirm_password) 
     {
         if ($password != $confirm_password) {
@@ -136,6 +214,15 @@ class Account
     {
         if (in_array($error, $this->errorArray)) {
             return "<span class='errorMessage'>$error</span>";
+        }
+    }
+    
+    public function getFirstError()
+    {
+        if (!empty($this->errorArray)) {
+            return $this->errorArray[0];
+        } else {
+            return "";
         }
     }
 }

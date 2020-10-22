@@ -24,7 +24,7 @@ class User
 
     public function getUsername()
     {
-        return User::isLoggedIn() ? $this->sqlData["username"] : 'null';
+        return User::isLoggedIn() && is_array($this->sqlData) ? $this->sqlData["username"] : "";    
     }
 
     public function getName()
@@ -49,6 +49,7 @@ class User
 
     public function getProfilePic()
     {
+        // return User::isLoggedIn() && is_array($this->sqlData) ? $this->sqlData["profilePic"] : ""; 
         return $this->sqlData["profilePic"];
     }
 

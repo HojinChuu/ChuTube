@@ -6,6 +6,10 @@ $(document).ready(() => {
         main.toggleClass("leftPadding")
         main.hasClass("leftPadding") ? nav.show() : nav.hide();
     })
+
+    setTimeout(function() {
+        $(".alert").fadeTo(500, 0) 
+    }, 2000);
 });
 
 function notSignedIn() {
