@@ -26,11 +26,13 @@ class Video
 
     public function getId()
     {
+        var_dump($this->sqlData["id"]);
         return $this->sqlData["id"];
     }
 
     public function getUploadedBy()
     {
+        var_dump($this->sqlData["uploadedBy"]);
         return $this->sqlData["uploadedBy"];
     }
 
